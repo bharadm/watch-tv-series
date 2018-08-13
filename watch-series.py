@@ -1,12 +1,9 @@
 import bs4 as bs
 from urllib.request import Request,urlopen
-import database as db
 import csv 
 sauce=Request(str(input()),headers={'User-Agent':'Mozilla/5.0'})
 webpage=urlopen(sauce).read()
 soup=bs.BeautifulSoup(webpage,'lxml')
-
-db.create_table_name("Episodes")
 #ds=bs.BeautifulSoup(soup.findAll("dd",{"class":"episodes"}))
 i=0
 with open('file.csv','a',encoding="utf-8") as csvfile:
