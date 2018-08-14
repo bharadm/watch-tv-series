@@ -1,19 +1,35 @@
 import bs4 as bs
-from urllib.request import Request,urlopen
-import csv 
-sauce=Request(str(input()),headers={'User-Agent':'Mozilla/5.0'})
-webpage=urlopen(sauce).read()
-soup=bs.BeautifulSoup(webpage,'lxml')
-#ds=bs.BeautifulSoup(soup.findAll("dd",{"class":"episodes"}))
-i=0
-with open('file.csv','a',encoding="utf-8") as csvfile:
-    fieldnames=['id','title','link']
-    writer=csv.DictWriter(csvfile,fieldnames=fieldnames)
-    writer.writeheader()
-    for link in soup.findAll('li',{'class':'link'}):
-        i=i+1
-        #print(link.find('a')['title'])
-        writer.writerow({'id':i,'title':link.find('a')['title'],'link':link.find('a')['href']})
-    print("writing complete")
-#db.season_entry(i,link.find('a')['title'],link.find('a')['href'],"Episodes")
-#db.close_conn()
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from urllib.request import Request, urlopen
+import csv
+import watchseriesinsert as ws
+driver = webdriver.Chrome("C:/Users/Bharadwaj/Downloads/chromedriver.exe")
+url_website = str(input("Give url link: "))
+driver.get(url_website)
+i = -1
+list = []
+while i != 0:
+    print("Give search command ")
+    elem = driver.find_element_by_xpath("/html/body/div[1]/div/div[2]/form/div/input")
+    elem.clear()
+    elem.send_keys(str(input()))
+    elem.send_keys(Keys.RETURN)
+    count = 0
+    sauce = Request(str(driver.current_url), None,{'User-Agent': 'Mozilla/5.0'})
+    website = urlopen(sauce)
+    soup = bs.BeautifulSoup(website, 'lxml')
+    print("Select \n")
+    for link in soup.find_all('div', {'class':'wrap'}):
+        #print(link.find('a')['href'])
+        list.insert(count,link.find('a')['href'])
+        print(str(count)+". "+(link.find('h5')['title']))
+        count = count+1
+    print("-1. Search again")
+    print("-2. Exit")
+    value = int(input(""))
+    if value>=0:
+        ws.insert_method(list[value])
+        break
+    elif value==-2:
+        exit(0)
